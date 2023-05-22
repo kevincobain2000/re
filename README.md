@@ -29,7 +29,7 @@
 
 ## Usage
 
-READ the README.md file in current dir
+READ the README.md file in current dir.
 
 ```
 re

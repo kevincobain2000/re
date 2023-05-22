@@ -9,9 +9,13 @@ import (
 	"github.com/manifoldco/promptui"
 )
 
+var version = "dev"
+
 const README_PATH = "README.md"
 
 func main() {
+	versionCmd()
+
 	readmePath := README_PATH
 	if len(os.Args) > 1 && os.Args[1] != "" {
 		readmePath = os.Args[1]
@@ -36,5 +40,13 @@ func main() {
 	_, err = cmd.Run(command)
 	if err != nil {
 		return
+	}
+}
+
+func versionCmd() {
+	// check if -v or version or v in path
+	if len(os.Args) > 1 && (os.Args[1] == "-v" || os.Args[1] == "version" || os.Args[1] == "v") {
+		println(version)
+		os.Exit(0)
 	}
 }
