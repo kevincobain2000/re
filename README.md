@@ -7,9 +7,13 @@
   Stop going back and forth to the README for instructions. <br>
 </p>
 
-<pre align="center">
-  re
-</pre>
+*Commands parsed by `re` from `README.md` file.*
+
+![re](https://imgur.com/DgrXIVs.png)
+
+*Command execution after selection*
+
+![re](https://imgur.com/Y9HUHO0.png)
 
 
 **Hassle Free:** Simple command to get all the commands from `README.md` file.
@@ -40,14 +44,6 @@ or via go
 ```sh
 go install github.com/kevincobain2000/re@latest
 ```
-
-### Screenshot
-
-Commands parsed by `re` from `README.md` file.
-![re](https://imgur.com/DgrXIVs.png)
-
-Command execution after selection
-![re](https://imgur.com/Y9HUHO0.png)
 
 
 # Change Log
