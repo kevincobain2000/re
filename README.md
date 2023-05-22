@@ -43,7 +43,10 @@ go install github.com/kevincobain2000/re@latest
 
 ### Screenshot
 
+Commands parsed by `re` from `README.md` file.
 ![re](https://imgur.com/DgrXIVs.png)
+
+Command execution after selection
 ![re](https://imgur.com/Y9HUHO0.png)
 
 
