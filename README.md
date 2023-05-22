@@ -20,7 +20,7 @@
 
 **About:** By executing `re` command, you will get a list of commands to scroll through.
 
-**How it works:** The tool parses the `README.md` file's markdown, analyzes code-blocks and filters `sh`, `bash`, `powershell`, `zsh` etc. commands as selectable prompts.
+**How it works:** The tool parses the `README.md` file's markdown in current dir you are on. Analyzes code-blocks and filters `sh`, `bash`, `powershell`, `zsh` etc. commands as selectable prompts.
 
 **Platforms:** Supports (arm64, arch64, Mac, Mac M1, Ubuntu and Windows).
 
