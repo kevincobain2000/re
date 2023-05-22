@@ -59,4 +59,4 @@ go install github.com/kevincobain2000/re@latest
 # Change Log
 
 - v1.0 - Initial release
-- v1.2 - Add support for `re github.com/...repo`
+- v1.1 - Add support for `re github.com/...repo`
