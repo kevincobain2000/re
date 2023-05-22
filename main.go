@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/mikhae1/execmd"
 
 	"github.com/kevincobain2000/re/pkg"
@@ -10,7 +12,11 @@ import (
 const README_PATH = "README.md"
 
 func main() {
-	commands := pkg.NewReadmeHandler(README_PATH).Codelines()
+	readmePath := README_PATH
+	if len(os.Args) > 1 && os.Args[1] != "" {
+		readmePath = os.Args[1]
+	}
+	commands := pkg.NewReadmeHandler(readmePath).Codelines()
 
 	prompt := promptui.Select{
 		Label: "Choose command [ctrl+c to exit]:",

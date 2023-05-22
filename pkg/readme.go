@@ -1,9 +1,13 @@
 package pkg
 
 import (
+	"context"
+	"fmt"
 	"os"
 	"regexp"
 	"strings"
+
+	"github.com/carlmjohnson/requests"
 )
 
 var languages = []string{
@@ -15,16 +19,18 @@ var languages = []string{
 }
 
 type ReadmeHandler struct {
-	ReadmePath string
+	ReadmePath       string
+	DefaultURLBranch string
 }
 
 func NewReadmeHandler(readmePath string) *ReadmeHandler {
 	return &ReadmeHandler{
-		ReadmePath: readmePath,
+		ReadmePath:       readmePath,
+		DefaultURLBranch: "master",
 	}
 }
 
-func (h *ReadmeHandler) read() []byte {
+func (h *ReadmeHandler) readLocal() []byte {
 	file, err := os.Open(h.ReadmePath)
 	if err != nil {
 		return []byte("")
@@ -42,9 +48,62 @@ func (h *ReadmeHandler) read() []byte {
 	}
 	return contents
 }
+func (h *ReadmeHandler) isReadmePathURL() bool {
+	return strings.HasPrefix(h.ReadmePath, "http")
+}
+func (h *ReadmeHandler) convertGithubURL() string {
+	url := h.ReadmePath
+
+	// if url doesn't end with / then append /
+	if !strings.HasSuffix(url, "/") {
+		url += "/"
+	}
+
+	// replace github.com with raw.githubusercontent.com
+	url = strings.Replace(url, "github.com", "raw.githubusercontent.com", 1)
+	url += h.DefaultURLBranch + "/" + "README.md"
+	return url
+}
+
+func (h *ReadmeHandler) readURL() []byte {
+	var s string
+
+	// possibly check here for /tree/branch/ in url
+	// for now check for default branches
+	branches := []string{
+		"main",
+		"master",
+		"develop",
+	}
+
+	for idx, branch := range branches {
+		h.DefaultURLBranch = branch
+
+		url := h.convertGithubURL()
+		ctx := context.Background()
+		err := requests.
+			URL(url).
+			ToString(&s).
+			Fetch(ctx)
+		if err == nil {
+			break
+		}
+		// check if last
+		if idx == len(branches)-1 {
+			fmt.Println("Unable to fetch README.md from github.com")
+			return []byte("")
+		}
+	}
+	return []byte(s)
+}
 
 func (h *ReadmeHandler) parseCodeBlocks() [][]string {
-	readmeContents := h.read()
+	var readmeContents []byte
+	if h.isReadmePathURL() {
+		readmeContents = h.readURL()
+	} else {
+		readmeContents = h.readLocal()
+	}
 
 	// Extract code blocks using regular expressions
 	regex := regexp.MustCompile("(?s)```(.*?)```")

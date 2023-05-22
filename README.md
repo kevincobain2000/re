@@ -24,11 +24,21 @@
 
 **Platforms:** Supports (arm64, arch64, Mac, Mac M1, Ubuntu and Windows).
 
+**Supports:** Github.
+
 
 ## Usage
 
+READ the README.md file in current dir
+
 ```
 re
+```
+
+or from URL
+
+```
+re https://github.com/kevincobain2000/re
 ```
 
 ## Install
@@ -49,4 +59,4 @@ go install github.com/kevincobain2000/re@latest
 # Change Log
 
 - v1.0 - Initial release
-- v1.1 - [TODO] add support for `re github.com/...repo`
+- v1.2 - Add support for `re github.com/...repo`
