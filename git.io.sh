@@ -64,7 +64,5 @@ curl -kLs https://github.com/kevincobain2000/re/releases/latest/download/$RE_ARC
 chmod +x $RE_BIN_DIR/$RE_BIN
 
 echo "Installed successfully to: $RE_BIN_DIR/$RE_BIN"
-
-echo "============================"
-$RE_BIN_DIR/$RE_BIN help
-echo "============================"
+echo 'Add following to your shell config (.bashrc/.zshrc):'
+echo 'export PATH="$HOME/.re/bin:$PATH"'
