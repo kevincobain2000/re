@@ -1,0 +1,38 @@
+on: [push]
+name: Lint and Test
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        go-version: [latest]
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Install Go
+        uses: kevincobain2000/action-gobrew@v2
+        with:
+          version: ${{ matrix.go-version }}
+      - name: Install Tools
+        run: |
+          go install github.com/axw/gocov/gocov@latest
+          go install github.com/AlekSi/gocov-xml@latest
+          go install honnef.co/go/tools/cmd/staticcheck@latest
+          go install github.com/securego/gosec/v2/cmd/gosec@latest
+          go install github.com/fzipp/gocyclo/cmd/gocyclo@latest
+      - uses: actions/checkout@v2
+      - name: Build
+        run: go build main.go
+
+      - name: Vet
+        run: |
+          go vet -v ./...
+          staticcheck ./...
+          gosec ./...
+          gocyclo -over 15 ./
+      - name: Test
+        run: go test -race -v ./... -count=1 -coverprofile=coverage.txt -covermode=atomic
+      - uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml

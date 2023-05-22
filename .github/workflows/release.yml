@@ -1,0 +1,28 @@
+name: goreleaser
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  goreleaser:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: kevincobain2000/action-gobrew@v2
+        with:
+          version: 'mod'
+      -
+        name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v3
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release --rm-dist
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
