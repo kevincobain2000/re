@@ -31,7 +31,11 @@ func main() {
 	}
 	commands := pkg.NewReadmeHandler(path, *flagTag).Codelines()
 	prompts := pkg.NewPromptHandler(commands).MultiSelect()
-	pkg.NewPromptHandler(prompts).Execute()
+	err := pkg.NewPromptHandler(prompts).Execute()
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
 }
 
 func printVersion() {

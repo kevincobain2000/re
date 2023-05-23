@@ -1,6 +1,8 @@
 package pkg
 
 import (
+	"fmt"
+
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/mikhae1/execmd"
 )
@@ -40,6 +42,10 @@ func (h *PromptHandler) MultiSelect() []string {
 		Options:  h.prompts,
 		PageSize: 20,
 	}
-	survey.AskOne(prompt, &prompts)
+	err := survey.AskOne(prompt, &prompts)
+	if err != nil {
+		fmt.Print(err.Error())
+		return []string{}
+	}
 	return prompts
 }
