@@ -70,4 +70,4 @@ go install github.com/kevincobain2000/re@latest
 
 - v1.0 - Initial release
 - v1.1 - Add support for `re github.com/...repo`
-- v1.2 - Add support for enterprise and direct tree/blob paths of `README.md`. Multi-line parsing. And Tags.
+- v1.3 - Add support for enterprise and direct tree/blob paths of `README.md`. Multi-line parsing. And Tags.
