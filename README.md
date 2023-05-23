@@ -5,18 +5,17 @@
 </p>
 <p align="center">
   Stop going back and forth to the README for instructions. <br>
+  Command Line Tool to execute commands in README.md file. <br>
 </p>
+
+Select multiple and execute commands in README.md.
 
 *Commands parsed by `re` from `README.md` file.*
 
-![re](https://imgur.com/DgrXIVs.png)
-
-*Command execution after selection*
-
-![re](https://imgur.com/Y9HUHO0.png)
+![re](https://imgur.com/zFiYhgO.png)
 
 
-**Hassle Free:** Simple command to get all the commands from `README.md` file.
+**Hassle Free:** Simple command to get all the commands from `README.md` file. Works with Github URLs.
 
 **About:** By executing `re` command, you will get a list of commands to scroll through.
 
@@ -29,16 +28,25 @@
 
 ## Usage
 
-READ the README.md file in current dir.
+READ the README.md file in the current dir.
 
-```
+```sh
+# By default it looks into sh, bash, powershell etc.. code blocks
 re
+re -t sh # filter by language i.e only commands inside ` ` ` sh blocks are parsed
 ```
 
 or from URL
 
-```
+```sh
+# automatically picks readme from main, master or develop branch
 re https://github.com/kevincobain2000/re
+
+# or direct link to the readme
+re https://github.com/kevincobain2000/re/blob/master/README.md
+
+# tags work as usual
+re -t sh <url>
 ```
 
 ## Install
@@ -50,7 +58,9 @@ curl -sLk https://raw.githubusercontent.com/kevincobain2000/re/master/git.io.sh 
 # add to path in .bashrc or .zshrc
 export PATH="$HOME/.re/bin:$PATH"
 ```
+
 or via go
+
 ```sh
 go install github.com/kevincobain2000/re@latest
 ```
@@ -60,3 +70,4 @@ go install github.com/kevincobain2000/re@latest
 
 - v1.0 - Initial release
 - v1.1 - Add support for `re github.com/...repo`
+- v1.2 - Add support for enterprise and direct tree/blob paths of `README.md`. Multi-line parsing. And Tags.

@@ -5,28 +5,23 @@ import (
 	"fmt"
 	"os"
 	"regexp"
-	"strings"
 
 	"github.com/carlmjohnson/requests"
 )
 
-var languages = []string{
-	"sh",
-	"bash",
-	"zsh",
-	"fish",
-	"powershell",
-}
-
 type ReadmeHandler struct {
-	ReadmePath       string
-	DefaultURLBranch string
+	ReadmePath  string
+	Tag         string
+	urlHandler  *URLHandler
+	lineHandler *LineHandler
 }
 
-func NewReadmeHandler(readmePath string) *ReadmeHandler {
+func NewReadmeHandler(readmePath string, tag string) *ReadmeHandler {
 	return &ReadmeHandler{
-		ReadmePath:       readmePath,
-		DefaultURLBranch: "master",
+		ReadmePath:  readmePath,
+		Tag:         tag,
+		urlHandler:  NewURLHandler(),
+		lineHandler: NewLineHandler(),
 	}
 }
 
@@ -48,59 +43,47 @@ func (h *ReadmeHandler) readLocal() []byte {
 	}
 	return contents
 }
-func (h *ReadmeHandler) isReadmePathURL() bool {
-	return strings.HasPrefix(h.ReadmePath, "http")
-}
-func (h *ReadmeHandler) convertGithubURL() string {
-	url := h.ReadmePath
 
-	// if url doesn't end with / then append /
-	if !strings.HasSuffix(url, "/") {
-		url += "/"
-	}
+func (h *ReadmeHandler) readRemote() []byte {
+	// readme contents from URL
+	var contents string
 
-	// replace github.com with raw.githubusercontent.com
-	url = strings.Replace(url, "github.com", "raw.githubusercontent.com", 1)
-	url += h.DefaultURLBranch + "/" + "README.md"
-	return url
-}
-
-func (h *ReadmeHandler) readURL() []byte {
-	var s string
-
-	// possibly check here for /tree/branch/ in url
-	// for now check for default branches
-	branches := []string{
-		"main",
-		"master",
-		"develop",
-	}
-
-	for idx, branch := range branches {
-		h.DefaultURLBranch = branch
-
-		url := h.convertGithubURL()
+	if h.urlHandler.isFullReadmeURL(h.ReadmePath) {
+		u := h.urlHandler.githubBlobURLToRawReadmeURL(h.ReadmePath)
 		ctx := context.Background()
 		err := requests.
-			URL(url).
-			ToString(&s).
+			URL(u).
+			ToString(&contents).
+			Fetch(ctx)
+		if err != nil {
+			return []byte("")
+		}
+		return []byte(contents)
+	}
+
+	for idx, branch := range h.urlHandler.defaultBranches {
+		u := h.urlHandler.githubBranchedURLToRawReadmeURL(h.ReadmePath, branch)
+		ctx := context.Background()
+		err := requests.
+			URL(u).
+			ToString(&contents).
 			Fetch(ctx)
 		if err == nil {
 			break
 		}
 		// check if last
-		if idx == len(branches)-1 {
+		if idx == len(h.urlHandler.defaultBranches)-1 {
 			fmt.Println("Unable to fetch README.md from github.com")
 			return []byte("")
 		}
 	}
-	return []byte(s)
+	return []byte(contents)
 }
 
 func (h *ReadmeHandler) parseCodeBlocks() [][]string {
 	var readmeContents []byte
-	if h.isReadmePathURL() {
-		readmeContents = h.readURL()
+	if h.urlHandler.IsRemotePath(h.ReadmePath) {
+		readmeContents = h.readRemote()
 	} else {
 		readmeContents = h.readLocal()
 	}
@@ -115,89 +98,49 @@ func (h *ReadmeHandler) Codelines() []string {
 	codeLines := make([]string, 0)
 	codeBlocks := h.parseCodeBlocks()
 	for _, match := range codeBlocks {
-		lines := match[1]
-		for idx, line := range strings.Split(lines, "\n") {
-			// trim spaces
-			line = strings.TrimSpace(line)
+		block := match[1]
 
-			// ```sh is the first line of the code block, sh is extracted from it
-			// check if this can be interpreted as a language
-			if idx == 0 && !h.isLanguage(line) {
-				break // out of entire code block
+		// split by \n except if line ends with \
+		lines := h.lineHandler.splitString(block)
+		if len(lines) == 0 {
+			continue
+		}
+
+		lineFirst := lines[0]
+		lineFirst = h.lineHandler.trim(lineFirst)
+		tag := h.lineHandler.extractTag(lineFirst)
+		lang := h.lineHandler.extractLang(lineFirst)
+		if h.Tag == "" {
+			if !h.lineHandler.isLanguage(lang) {
+				continue // out of entire code block to next
 			}
+		}
+
+		if h.Tag != "" {
+			if h.Tag != tag && h.Tag != lang {
+				continue
+			}
+		}
+
+		// after 1st line
+		for _, line := range lines[1:] {
+			// trim spaces
+			line = h.lineHandler.trim(line)
+
 			// check if line has a length
 			if len(line) == 0 {
+				continue // out of this line to next
+			}
+			if h.lineHandler.isComment(line) {
 				continue
 			}
-			if h.isComment(line) {
-				continue
-			}
-			if h.startsWithUpperCase(line) {
-				continue
-			}
-			if h.startsWithNumeric(line) {
-				continue
-			}
-			if !h.startsWithEnglish(line) {
+			line := h.lineHandler.removePrompt(line)
+			if !h.lineHandler.startsWithLowercaseEnglishAlphabet(line) {
 				continue
 			}
 
-			line := h.removePrompt(line)
-
-			if idx > 0 {
-				codeLines = append(codeLines, line)
-			}
+			codeLines = append(codeLines, line)
 		}
 	}
 	return codeLines
-}
-
-func (h *ReadmeHandler) removePrompt(line string) string {
-	if strings.HasPrefix(line, "$") || strings.HasPrefix(line, ">") {
-		line = line[1:]
-		line = strings.TrimSpace(line)
-	}
-	return line
-}
-
-func (h *ReadmeHandler) startsWithUpperCase(line string) bool {
-	if len(line) == 0 {
-		return false
-	}
-	return line[0] >= 'A' && line[0] <= 'Z'
-}
-func (h *ReadmeHandler) startsWithEnglish(line string) bool {
-	if len(line) == 0 {
-		return false
-	}
-	return line[0] >= 'a' && line[0] <= 'z'
-}
-
-func (h *ReadmeHandler) startsWithNumeric(line string) bool {
-	if len(line) == 0 {
-		return false
-	}
-	return line[0] >= '0' && line[0] <= '9'
-}
-
-func (h *ReadmeHandler) isLanguage(line string) bool {
-	return h.contains(languages, line)
-}
-
-func (h *ReadmeHandler) isComment(line string) bool {
-	// check if line is a comment
-	if strings.HasPrefix(line, "#") || strings.HasPrefix(line, "//") {
-		return true
-	}
-	return false
-}
-
-// check if in array
-func (h *ReadmeHandler) contains(arr []string, str string) bool {
-	for _, a := range arr {
-		if a == str {
-			return true
-		}
-	}
-	return false
 }

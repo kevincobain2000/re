@@ -1,12 +1,11 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"os"
 
-	"github.com/mikhae1/execmd"
-
 	"github.com/kevincobain2000/re/pkg"
-	"github.com/manifoldco/promptui"
 )
 
 var version = "dev"
@@ -14,39 +13,28 @@ var version = "dev"
 const README_PATH = "README.md"
 
 func main() {
-	versionCmd()
+	flagVersion := flag.Bool("v", false, "show version")
+	flagTag := flag.String("t", "sh", "tag to only show commands in code block with this tag")
+	flag.Parse()
 
-	readmePath := README_PATH
-	if len(os.Args) > 1 && os.Args[1] != "" {
-		readmePath = os.Args[1]
-	}
-	commands := pkg.NewReadmeHandler(readmePath).Codelines()
-
-	prompt := promptui.Select{
-		Label: "Choose command [ctrl+c to exit]:",
-		Items: commands,
-		Size:  25,
+	if *flagVersion {
+		printVersion()
 	}
 
-	_, command, err := prompt.Run()
-
-	if err != nil {
-		return
+	path := README_PATH
+	for _, arg := range os.Args {
+		// check if arg is a URL
+		if pkg.NewURLHandler().IsRemotePath(arg) {
+			path = arg
+			break
+		}
 	}
-	// execute command
-	cmd := execmd.NewCmd()
-	cmd.PrefixStderr = ""
-	cmd.PrefixStdout = ""
-	_, err = cmd.Run(command)
-	if err != nil {
-		return
-	}
+	commands := pkg.NewReadmeHandler(path, *flagTag).Codelines()
+	prompts := pkg.NewPromptHandler(commands).MultiSelect()
+	pkg.NewPromptHandler(prompts).Execute()
 }
 
-func versionCmd() {
-	// check if -v or version or v in path
-	if len(os.Args) > 1 && (os.Args[1] == "-v" || os.Args[1] == "version" || os.Args[1] == "v") {
-		println(version)
-		os.Exit(0)
-	}
+func printVersion() {
+	fmt.Println(version)
+	os.Exit(0)
 }
