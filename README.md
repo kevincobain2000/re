@@ -5,44 +5,39 @@
 </p>
 <p align="center">
   Stop going back and forth to the README for instructions. <br>
-  Command Line Tool to execute commands in README.md file. <br>
+  CLI to execute commands in README.md on local or Github. <br>
 </p>
 
-Select multiple and execute commands in README.md.
-
-*Commands parsed by `re` from `README.md` file.*
 
 ![re](https://imgur.com/zFiYhgO.png)
 
 
-**Hassle Free:** Simple command to get all the commands from `README.md` file. Works with Github URLs.
+**Hassle Free:** Easy install.
 
-**About:** By executing `re` command, you will get a list of commands to scroll through.
-
-**How it works:** The tool parses the `README.md` file's markdown in current dir you are on. Analyzes code-blocks and filters `sh`, `bash`, `powershell`, `zsh` etc. commands as selectable prompts.
+**About:** Hit `re` command, select multiple commands and execute.
 
 **Platforms:** Supports (arm64, arch64, Mac, Mac M1, Ubuntu and Windows).
 
-**Supports:** Github.
+**Supports:** Any README.md on local or from Github and Github Enterprise URLs.
 
 
 ## Usage
 
-READ the README.md file in the current dir.
-
 ```sh
-# By default it looks into sh, bash, powershell etc.. code blocks
+# By default it looks README.md file in directory you are executing from
 re
+
+# By default it looks for sh, bash, powershell etc.. code blocks
 re -t sh # filter by language i.e only commands inside ` ` ` sh blocks are parsed
 ```
 
 or from URL
 
 ```sh
-# automatically picks readme from main, master or develop branch
+# automatically picks README.md from main, master or develop branch
 re https://github.com/kevincobain2000/re
 
-# or direct link to the readme
+# or direct link to the README.md
 re https://github.com/kevincobain2000/re/blob/master/README.md
 
 # tags work as usual
