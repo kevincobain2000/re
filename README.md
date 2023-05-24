@@ -20,7 +20,7 @@
 
 **Supports:** Any README.md on local or from Github and Github Enterprise URLs.
 
-**Supports:** Milti line commands.
+**Supports:** Multi line commands. And colorful UI based on previous execution status.
 
 ## Install
 
