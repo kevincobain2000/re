@@ -54,7 +54,7 @@ OR from URL
 re https://github.com/kevincobain2000/re
 
 # or direct link any other MD file, even provide custom tags
-re customtag https://github.com/kevincobain2000/re/blob/master/EXAMPLE.md
+re custom_tag https://github.com/kevincobain2000/re/blob/master/EXAMPLE.md
 ```
 
 ## Colors
