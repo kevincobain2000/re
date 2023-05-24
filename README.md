@@ -4,12 +4,16 @@
   </a>
 </p>
 <p align="center">
-  Stop going back and forth to the README for instructions. <br>
-  CLI to execute commands in README.md on local or Github. <br>
+  Stop going back and forth to README. <br>
+  CLI to execute commands from local or Github. <br>
+  <br>
+  <a href="https://kevincobain2000-x.medium.com/automating-command-execution-straight-from-readme-md-5880f4a7f8f1">Read on Medium</a>
 </p>
 
 
-![re](https://imgur.com/zFiYhgO.png)
+![re](https://imgur.com/krlHmBZ.png)
+![re](https://imgur.com/BCRgrh5.png)
+![re](https://imgur.com/EKJUokU.png)
 
 
 **Hassle Free:** Easy install on any arch. No dependencies.
@@ -20,7 +24,7 @@
 
 **Supports:** Any README.md on local or from Github and Github Enterprise URLs.
 
-**Supports:** Multi line commands. And colorful UI based on previous execution status.
+**Supports:** Multi-line commands. And colorful UI based on previous execution status.
 
 ## Install
 
