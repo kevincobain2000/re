@@ -60,8 +60,10 @@ re custom_tag https://github.com/kevincobain2000/re/blob/master/EXAMPLE.md
 ## Colors
 
 `re` displays commands upon previous execution status as RED or GREEN.
+
 You can clear the colors by using `re clear` flag or `re clear <url>`.
-This will clear the colors for the given URL, when no URL is provided then cleared based on the commands in `README.md` in current dir.
+
+This will clear the colors for the given URL, when no URL is provided then cleared based on the commands in `README.md` in the current dir.
 
 # Change Log
 

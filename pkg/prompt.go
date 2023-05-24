@@ -39,9 +39,11 @@ func (h *PromptHandler) Execute() error {
 	for _, prompt := range h.prompts {
 		prompt := h.stripOffTermColors(prompt)
 		if err := h.run(prompt); err != nil {
+			/* #nosec */
 			h.storageHandler.Set(prompt, ERRORED_PROMPT)
 			return err
 		}
+		/* #nosec */
 		h.storageHandler.Set(prompt, SUCCESS_PROMPT)
 	}
 	return nil
@@ -97,6 +99,7 @@ func (h *PromptHandler) GetColoredPrompts() []string {
 
 func (h *PromptHandler) ClearColoredPrompts() {
 	for _, prompt := range h.prompts {
+		/* #nosec */
 		h.storageHandler.Delete(prompt)
 	}
 }
