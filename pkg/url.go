@@ -9,6 +9,7 @@ const (
 	GITHUB_DOMAIN     = "github.com"
 	GITHUB_RAW_DOMAIN = "raw.githubusercontent.com"
 	README_MD         = "README.md"
+	EXTENSION_MD      = ".md"
 )
 
 type URLHandler struct {
@@ -22,7 +23,7 @@ func NewURLHandler() *URLHandler {
 }
 
 func (h *URLHandler) isFullReadmeURL(u string) bool {
-	return strings.HasSuffix(u, README_MD)
+	return strings.HasSuffix(u, EXTENSION_MD)
 }
 
 func (h *URLHandler) IsRemotePath(path string) bool {
